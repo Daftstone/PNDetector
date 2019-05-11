@@ -1,0 +1,11 @@
+tensorflow-gpu==1.12.0
+keras==2.1.6
+numpy==1.16.2
+matplotlib
+h5py
+pillow
+scikit-learn
+click
+future
+opencv-python
+tinydb
