@@ -24,7 +24,7 @@ and extract it to the root of the program.
 usage: python main.py [--dataset DATASET_NAME] [--attack_type ATTACK_NAME]
                [--detection_type DETECTION_NAME] [--is_train [IS_TRAIN]] [--use_cache [USE_CACHE]]
                [--nb_epochs EPOCHS_NUMBER] [--train_fpr FPR] 
-               [-similarity_type SIMILARITY_INDEX]
+               [-label_type LABEL_ASSIGNMENT]
 
 optional arguments:
   --dataset DATASET_NAME
@@ -41,8 +41,8 @@ optional arguments:
                         Number of epochs the classifier is trained.
   --train_fpr FPR
                         set FPR
-  --similarity_type
-                        Supported: cos, l1, l2
+  --label_type
+                        Supported: type1, type2, type3
 ```
 
 ### 4. Example.
