@@ -70,7 +70,10 @@ class MNIST_model:
                                        horizontal_flip=True)
         generator.fit(x_train, seed=0)
         # Load model
-        weights_file = "weights/mnist/%s_model.h5" % FLAGS.detection_type
+        if (FLAGS.detection_type == 'negative'):
+            weights_file = "weights/mnist/%s_model_%s.h5" % (FLAGS.detection_type, FLAGS.label_type)
+        else:
+            weights_file = "weights/mnist/origin_model.h5"
         if os.path.exists(weights_file) and is_train == False:
             self.model.load_weights(weights_file)
             print("Model loaded.")

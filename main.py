@@ -61,17 +61,22 @@ def detection(nb_epochs=60, batch_size=128,
         x_train = np.append(x_train, 1. - x_train, axis=0)
         y_train = np.append(y_train, y_train, axis=0)
 
-    y_train_temp1 = np.copy(y_train[:y_train.shape[0] // 2])
-    y_train_temp1[y_train_temp1 == 1] = 0.9
-    y_train_temp2 = np.copy(y_train[:y_train.shape[0] // 2])
-    y_train_temp2[y_train_temp2 == 1] = 0.1
-    y_train = np.concatenate((np.concatenate((y_train_temp1, y_train_temp2), axis=-1),
-                              np.concatenate((y_train_temp2, y_train_temp1), axis=-1)), axis=0)
-    y_test_temp1 = np.copy(y_test[:y_test.shape[0]])
-    y_test_temp1[y_test_temp1 == 1] = 0.9
-    y_test_temp2 = np.copy(y_test[:y_test.shape[0]])
-    y_test_temp2[y_test_temp2 == 1] = 0.1
-    y_test = np.concatenate((y_test_temp1, y_test_temp2), axis=-1)
+    if (FLAGS.label_type != 'type1'):
+        if (FLAGS.label_type == 'type2'):
+            P = 1.
+        elif (FLAGS.label_type == 'type3'):
+            P = 0.75
+        y_train_temp1 = np.copy(y_train[:y_train.shape[0] // 2])
+        y_train_temp1[y_train_temp1 == 1] = P
+        y_train_temp2 = np.copy(y_train[:y_train.shape[0] // 2])
+        y_train_temp2[y_train_temp2 == 1] = 1. - P
+        y_train = np.concatenate((np.concatenate((y_train_temp1, y_train_temp2), axis=-1),
+                                  np.concatenate((y_train_temp2, y_train_temp1), axis=-1)), axis=0)
+        y_test_temp1 = np.copy(y_test[:y_test.shape[0]])
+        y_test_temp1[y_test_temp1 == 1] = P
+        y_test_temp2 = np.copy(y_test[:y_test.shape[0]])
+        y_test_temp2[y_test_temp2 == 1] = 1. - P
+        y_test = np.concatenate((y_test_temp1, y_test_temp2), axis=-1)
 
     # Use Image Parameters
     img_rows, img_cols, nchannels = x_train.shape[1:4]
@@ -164,4 +169,5 @@ if __name__ == '__main__':
     flags.DEFINE_float('stdevs', 0.05,
                        'L-2 perturbation size is equal to that of the adversarial samples')
     flags.DEFINE_string('similarity_type', "cos", 'similarity index')
+    flags.DEFINE_string('label_type', "type1", 'label assignment')
     tf.app.run()
