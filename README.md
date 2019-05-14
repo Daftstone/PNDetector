@@ -62,7 +62,7 @@ python main.py --dataset mnist --attack_type fgsm \
 ## 5. Usage of `python run.py`
 ```
 usage: python run.py [--dataset DATASET_NAME] [--detection_type DETECTION_NAME]
-               [--train_fpr FPR] [-similarity_type SIMILARITY_INDEX]
+               [--train_fpr FPR] [-label_type LABEL ASSIGNMENT]
 
 optional arguments:
   --dataset DATASET_NAME
