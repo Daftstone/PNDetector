@@ -1,1 +1,0 @@
-from .mobilenets_model import mobilenet_imagenet_model
