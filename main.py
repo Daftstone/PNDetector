@@ -14,10 +14,8 @@ from tensorflow.python.platform import flags
 from keras import backend as K
 
 sys.path.append("./attack/cleverhans")
-sys.path.append("./external/DenseNet")
-sys.path.append("./external/resnet")
 sys.path.append("./external/EvadeML")
-# sys.path.append("./external/LID")
+sys.path.append("./external/LID")
 
 from cleverhans.utils_keras import KerasModelWrapper
 
