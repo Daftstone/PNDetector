@@ -4,7 +4,7 @@ This project is for the paper "Detecting Adversarial Examples by Positive and
 Negative Representations". Some codes are from EvadeML, LID, BU 
 and cleverhans.
 
-The code was developed on Python 3.6.8
+The code was developed on Python 3.6
 
 
 ## 1. Install dependencies.
@@ -49,13 +49,13 @@ optional arguments:
 Use pre-trained model.
 ```bash
 python main.py --dataset mnist --attack_type fgsm \
---detection_type negative --train_fpr 0.05 --similarity_type cos
+--detection_type negative --train_fpr 0.05 --label_type type1
 ```
 Train model online.
 ```bash
 python main.py --dataset mnist --attack_type fgsm \
 --nb_epochs 100 --detection_type negative \
---train_fpr 0.05 --is_train --similarity_type l1
+--train_fpr 0.05 --is_train --label_type type1
 ```
 
 
@@ -71,21 +71,14 @@ optional arguments:
                         Supported: negative, lid, bu, fs.
   --train_fpr FPR
                         set FPR
-  --similarity_type
-                        Supported: cos, l1, l2
+  --label_type
+                        Supported: type1, type2, type3
 ```
 
 ### 6. Example.
 ```bash
 python run.py --dataset mnist --detection_type negative \
---train_fpr 0.05 --similarity_type cos
+--train_fpr 0.05 --label_type type1
 ```
 
 
-## Cite this work
-
-You are encouraged to cite the following paper if you use `PNDetector` for academic research.
-
-```
-pass
-```
