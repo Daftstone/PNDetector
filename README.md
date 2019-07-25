@@ -15,7 +15,7 @@ pip install -r requirements_gpu.txt
 
 ## 2. Download dataset and pre-trained models.
 Download [dataset](https://drive.google.com/file/d/1gyBeIpy4WzO17_7hjZKR6flP9oPhHVfU/view) 
-and extract it to the root of the program, which contains the MNIST, FMNIST, and CIFAR-10 dataset.
+and extract it to the root of the program, which contains the MNIST, FMNIST, and SVHN dataset.
 
 Download [pre-trained models](https://drive.google.com/file/d/1kYQC28-FNDhMOx8k-mLji20dkTrCLm6F/view?usp=sharing)
 and extract it to the root of the program. 
