@@ -17,7 +17,7 @@ pip install -r requirements_gpu.txt
 Download [dataset](https://drive.google.com/file/d/1gyBeIpy4WzO17_7hjZKR6flP9oPhHVfU/view) 
 and extract it to the root of the program, which contains the MNIST, FMNIST, and SVHN dataset.
 
-Download [pre-trained models](https://drive.google.com/file/d/1kYQC28-FNDhMOx8k-mLji20dkTrCLm6F/view?usp=sharing)
+Download [pre-trained models](https://drive.google.com/open?id=1c1rKZzbYP5AELJhl5Uxs1bFzHU04sRnx)
 and extract it to the root of the program. 
 ## 3. Usage of `python main.py`
 ```
