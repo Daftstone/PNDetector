@@ -1,6 +1,6 @@
 # Detecting Adversarial Examples by Positive and Negative Representations
 
-This project is for the paper "Detecting Adversarial Examples by Positive and 
+This project is code of the paper "Detecting Adversarial Examples by Positive and 
 Negative Representations". Some codes are from EvadeML, LID, BU 
 and cleverhans.
 
