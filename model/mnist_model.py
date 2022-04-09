@@ -3,12 +3,13 @@ import sys
 
 import numpy as np
 import keras
-import tensorflow
+import tensorflow as tf
+
 from keras.preprocessing.image import ImageDataGenerator
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-from keras.layers import Dense, Dropout, Activation, Flatten, Lambda
-from keras.layers import MaxPooling2D, Conv2D
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Lambda
+from tensorflow.keras.layers import MaxPooling2D, Conv2D
 from tensorflow.python.platform import flags
 import pickle
 
@@ -27,7 +28,7 @@ class MNIST_model:
         define tohinz model
         :return:
         """
-        model = keras.Sequential()
+        model = tf.keras.Sequential()
 
         model.add(Conv2D(self.nb_filters, (3, 3), input_shape=self.input_shape[1:]))
         model.add(Activation('relu'))
@@ -81,7 +82,7 @@ class MNIST_model:
 
         lr_reducer = ReduceLROnPlateau(monitor='val_acc', factor=np.sqrt(0.1),
                                        cooldown=0, patience=5, min_lr=1e-5)
-        model_checkpoint = ModelCheckpoint(weights_file, monitor="val_acc", save_best_only=True,
+        model_checkpoint = ModelCheckpoint(weights_file, monitor="val_acc", save_best_only=False,
                                            save_weights_only=True, verbose=1)
 
         callbacks = [lr_reducer, model_checkpoint]
@@ -93,5 +94,5 @@ class MNIST_model:
                                            callbacks=callbacks,
                                            validation_data=(x_test, y_test),
                                            validation_steps=x_test.shape[0] // batch_size, verbose=1)
-            with open('mnist_%s' % FLAGS.detection_type, 'wb') as file_pi:
+            with open('mnist_%s_%s' % (FLAGS.detection_type, FLAGS.label_type), 'wb') as file_pi:
                 pickle.dump(his.history, file_pi)

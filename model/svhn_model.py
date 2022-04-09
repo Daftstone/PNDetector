@@ -3,10 +3,10 @@ import sys
 
 import pickle
 import numpy as np
-import keras
+import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 from keras.layers import Dense, Dropout, Activation, Flatten, Lambda
 from keras.layers import MaxPooling2D, Conv2D
 from keras.layers.normalization import BatchNormalization
@@ -16,7 +16,7 @@ FLAGS = flags.FLAGS
 
 
 class SVHN_model:
-    def __init__(self, input_shape=(None, 28, 28, 1), nb_filters=64, nb_classes=10):
+    def __init__(self, input_shape=(None, 32, 32, 3), nb_filters=64, nb_classes=10):
         self.input_shape = input_shape
         self.nb_filters = nb_filters
         self.nb_classes = nb_classes
@@ -27,40 +27,62 @@ class SVHN_model:
         define tohinz model
         :return:
         """
-        model = keras.Sequential()
-        model.add(Conv2D(self.nb_filters, kernel_size=3, input_shape=(32, 32, 3), padding="same"))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(Conv2D(self.nb_filters, 3, padding="same"))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=2))
-        model.add(Dropout(0.3))
-
-        model.add(Conv2D(self.nb_filters * 2, 3))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(Conv2D(self.nb_filters * 2, 3, padding="same"))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=2))
-        model.add(Dropout(0.3))
-
-        model.add(Conv2D(self.nb_filters * 4, 3))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(Conv2D(self.nb_filters * 4, 3, padding="same"))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=2))
-        model.add(Dropout(0.3))
-
-        model.add(Flatten())
-        model.add(Dense(512, activation='relu'))
-        model.add(Dropout(0.3))
-
-        model.add(Dense(self.nb_classes))
-        model.add(Activation('softmax'))
+        # model = keras.Sequential()
+        # model.add(Conv2D(self.nb_filters, kernel_size=3, input_shape=(32, 32, 3), padding="same"))
+        # model.add(BatchNormalization())
+        # model.add(Activation('relu'))
+        # model.add(Conv2D(self.nb_filters, 3, padding="same"))
+        # model.add(BatchNormalization())
+        # model.add(Activation('relu'))
+        # model.add(MaxPooling2D(pool_size=2))
+        # model.add(Dropout(0.3))
+        #
+        # model.add(Conv2D(self.nb_filters * 2, 3))
+        # model.add(BatchNormalization())
+        # model.add(Activation('relu'))
+        # model.add(Conv2D(self.nb_filters * 2, 3, padding="same"))
+        # model.add(BatchNormalization())
+        # model.add(Activation('relu'))
+        # model.add(MaxPooling2D(pool_size=2))
+        # model.add(Dropout(0.3))
+        #
+        # model.add(Conv2D(self.nb_filters * 4, 3))
+        # model.add(BatchNormalization())
+        # model.add(Activation('relu'))
+        # model.add(Conv2D(self.nb_filters * 4, 3, padding="same"))
+        # model.add(BatchNormalization())
+        # model.add(Activation('relu'))
+        # model.add(MaxPooling2D(pool_size=2))
+        # model.add(Dropout(0.3))
+        #
+        # model.add(Flatten())
+        # model.add(Dense(512, activation='relu'))
+        # model.add(Dropout(0.3))
+        #
+        # model.add(Dense(self.nb_classes))
+        # model.add(Activation('softmax'))
+        model = tf.keras.Sequential()
+        for scale in range(3):
+            if (scale == 0):
+                model.add(tf.keras.layers.Convolution2D(filters=self.nb_filters << scale, kernel_size=(3, 3),
+                                                        kernel_initializer=tf.keras.initializers.he_normal(),
+                                                        activation='relu',
+                                                        padding='same', input_shape=self.input_shape[1:]))
+            else:
+                model.add(tf.keras.layers.Convolution2D(filters=self.nb_filters << scale, kernel_size=(3, 3),
+                                                        kernel_initializer=tf.keras.initializers.he_normal(),
+                                                        activation='relu',
+                                                        padding='same'))
+            model.add(tf.keras.layers.Convolution2D(filters=self.nb_filters << (scale + 1), kernel_size=(3, 3),
+                                                    kernel_initializer=tf.keras.initializers.he_normal(),
+                                                    activation='relu',
+                                                    padding='same'))
+            model.add(tf.keras.layers.AveragePooling2D(pool_size=(2, 2)))
+        model.add(tf.keras.layers.Flatten())
+        model.add(tf.keras.layers.Dense(256))
+        model.add(tf.keras.layers.Activation("relu"))
+        model.add(tf.keras.layers.Dense(self.nb_classes))
+        model.add(tf.keras.layers.Activation("softmax"))
         return model
 
     def train(self, x_train, y_train, x_test, y_test, batch_size=128, nb_epochs=60, is_train=True):
@@ -106,5 +128,5 @@ class SVHN_model:
                                            callbacks=callbacks,
                                            validation_data=(x_test, y_test),
                                            validation_steps=x_test.shape[0] // batch_size, verbose=1)
-            with open('svhn_%s' % FLAGS.detection_type, 'wb') as file_pi:
+            with open('svhn_%s_%s' % (FLAGS.detection_type, FLAGS.label_type), 'wb') as file_pi:
                 pickle.dump(his.history, file_pi)

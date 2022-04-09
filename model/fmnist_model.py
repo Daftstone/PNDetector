@@ -1,12 +1,13 @@
 import os
 import sys
 
+import tensorflow as tf
 import numpy as np
 import pickle
 import keras
 from keras.preprocessing.image import ImageDataGenerator
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 from tensorflow.python.platform import flags
 from keras.layers import Dense, Dropout, Activation, Flatten, Lambda
 from keras.layers import MaxPooling2D, Conv2D
@@ -27,27 +28,28 @@ class FMNIST_model:
         Define the VGG16 structure
         :return:
         '''
-        model = keras.Sequential()
+        model = tf.keras.Sequential()
         for scale in range(3):
             if (scale == 0):
-                model.add(keras.layers.Convolution2D(filters=self.nb_filters << scale, kernel_size=(3, 3),
-                                                     kernel_initializer=keras.initializers.he_normal(),
-                                                     activation='relu',
-                                                     padding='same', input_shape=self.input_shape[1:]))
+                model.add(tf.keras.layers.Convolution2D(filters=self.nb_filters << scale, kernel_size=(3, 3),
+                                                        kernel_initializer=tf.keras.initializers.he_normal(),
+                                                        activation='relu',
+                                                        padding='same', input_shape=self.input_shape[1:]))
             else:
-                model.add(keras.layers.Convolution2D(filters=self.nb_filters << scale, kernel_size=(3, 3),
-                                                     kernel_initializer=keras.initializers.he_normal(),
-                                                     activation='relu',
-                                                     padding='same'))
-            model.add(keras.layers.Convolution2D(filters=self.nb_filters << (scale + 1), kernel_size=(3, 3),
-                                                 kernel_initializer=keras.initializers.he_normal(), activation='relu',
-                                                 padding='same'))
-            model.add(keras.layers.AveragePooling2D(pool_size=(2, 2)))
-        model.add(keras.layers.Flatten())
-        model.add(keras.layers.Dense(256))
-        model.add(keras.layers.Activation("relu"))
-        model.add(keras.layers.Dense(self.nb_classes))
-        model.add(keras.layers.Activation("softmax"))
+                model.add(tf.keras.layers.Convolution2D(filters=self.nb_filters << scale, kernel_size=(3, 3),
+                                                        kernel_initializer=tf.keras.initializers.he_normal(),
+                                                        activation='relu',
+                                                        padding='same'))
+            model.add(tf.keras.layers.Convolution2D(filters=self.nb_filters << (scale + 1), kernel_size=(3, 3),
+                                                    kernel_initializer=tf.keras.initializers.he_normal(),
+                                                    activation='relu',
+                                                    padding='same'))
+            model.add(tf.keras.layers.AveragePooling2D(pool_size=(2, 2)))
+        model.add(tf.keras.layers.Flatten())
+        model.add(tf.keras.layers.Dense(256))
+        model.add(tf.keras.layers.Activation("relu"))
+        model.add(tf.keras.layers.Dense(self.nb_classes))
+        model.add(tf.keras.layers.Activation("softmax"))
 
         # model = keras.Sequential()
         #
@@ -103,7 +105,7 @@ class FMNIST_model:
 
         lr_reducer = ReduceLROnPlateau(monitor='val_acc', factor=np.sqrt(0.1),
                                        cooldown=0, patience=5, min_lr=1e-5)
-        model_checkpoint = ModelCheckpoint(weights_file, monitor="val_acc", save_best_only=True,
+        model_checkpoint = ModelCheckpoint(weights_file, monitor="val_acc", save_best_only=False,
                                            save_weights_only=True, verbose=1)
         callbacks = [lr_reducer, model_checkpoint]
         print("#############")
@@ -112,6 +114,6 @@ class FMNIST_model:
                                            steps_per_epoch=len(x_train) // batch_size, epochs=nb_epochs,
                                            callbacks=callbacks,
                                            validation_data=(x_test, y_test),
-                                           validation_steps=x_test.shape[0] // batch_size, verbose=1, max_q_size=100)
-            with open('fmnist_%s' % FLAGS.detection_type, 'wb') as file_pi:
+                                           validation_steps=x_test.shape[0] // batch_size, verbose=1)
+            with open('fmnist_%s_%s' % (FLAGS.detection_type, FLAGS.label_type), 'wb') as file_pi:
                 pickle.dump(his.history, file_pi)
