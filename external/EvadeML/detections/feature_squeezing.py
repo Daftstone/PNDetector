@@ -2,7 +2,7 @@ import sklearn
 from sklearn.metrics import roc_curve, auc
 import numpy as np
 from scipy.stats import entropy
-from keras.models import Model
+from tensorflow.keras.models import Model
 
 import operator
 import functools

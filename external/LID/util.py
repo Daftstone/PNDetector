@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.preprocessing import scale
-import keras.backend as K
+import tensorflow.keras.backend as K
 from keras.datasets import mnist, cifar10
 from keras.utils import np_utils
 from keras.models import Sequential
@@ -412,7 +412,7 @@ def get_layer_wise_activations(model, dataset):
     :param dataset: 'mnist', 'cifar', 'svhn', has different submanifolds architectures  
     :return: 
     """
-    assert dataset in ['mnist', 'cifar10', 'svhn', 'fmnist'], \
+    assert dataset in ['mnist', 'cifar10', 'svhn', 'fmnist', 'gtsrb'], \
         "dataset parameter must be either 'mnist' 'cifar' 'fmnist' or 'svhn'"
     if dataset == 'mnist':
         # mnist model
@@ -453,7 +453,7 @@ def mle_batch(data, batch, k):
 
     k = min(k, len(data) - 1)
     # f = lambda v: - k / np.sum(np.log(v / (v[-1])))
-    f = lambda v: - k / np.sum(np.log((v+1e-7) / (v[-1] + 1e-7)) + 1e-7)
+    f = lambda v: - k / np.sum(np.log((v + 1e-7) / (v[-1] + 1e-7)) + 1e-7)
     a = cdist(batch, data)
     a = np.apply_along_axis(np.sort, axis=1, arr=a)[:, 1:k + 1]
     a = np.apply_along_axis(f, axis=1, arr=a)
@@ -500,8 +500,9 @@ def get_lids_random_batch(model, X, X_noisy, X_adv, dataset, k=10, batch_size=10
             lids_adv: LID of advs images of shape (num_examples, lid_dim)
     """
     # get deep representations
+    # K.set_learning_phase(0)
     funcs = [K.function([model.layers[0].input, K.learning_phase()], [out])
-             for out in get_layer_wise_activations(model, dataset)]
+             for out in get_layer_wise_activations(model, dataset)[1:]]
     lid_dim = len(funcs)
     print("Number of layers to estimate: ", lid_dim)
 
@@ -804,7 +805,8 @@ def block_split(X, Y):
     X_adv, Y_adv = X[:partition], Y[:partition]
     X_norm, Y_norm = X[partition: 2 * partition], Y[partition: 2 * partition]
     X_noisy, Y_noisy = X[2 * partition:], Y[2 * partition:]
-    num_train = int(partition * 0.008) * 100
+    # num_train = int(partition * 0.008) * 100
+    num_train = int(partition * 0.8)
 
     X_train = np.concatenate((X_norm[:num_train], X_noisy[:num_train], X_adv[:num_train]))
     Y_train = np.concatenate((Y_norm[:num_train], Y_noisy[:num_train], Y_adv[:num_train]))
