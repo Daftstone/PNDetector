@@ -13,6 +13,7 @@ import time
 from keras.models import Model
 import keras.backend as K
 import pickle
+import cv2
 
 from functools import reduce
 from sklearn.metrics import roc_curve, auc
@@ -73,12 +74,26 @@ class DetectionEvaluator:
         if not os.path.isdir(self.task_dir):
             os.makedirs(self.task_dir)
 
+    def get_dist(self, x):
+        x = x.astype(np.float32)
+        x_neg = (1. - x).astype(np.float32)
+
+        pred1 = self.model.predict(x, batch_size=128)
+        pred2 = self.model.predict(x_neg, batch_size=128)
+
+        if (FLAGS.label_type != 'type1'):
+            pred2 = np.concatenate([pred2[:, pred2.shape[1] // 2:], pred2[:, :pred2.shape[1] // 2]],axis=-1)
+        distance = 1. - np.sum(pred1 * pred2, axis=-1) / (
+                np.sqrt(np.sum(pred1 * pred1, axis=-1)) * np.sqrt(np.sum(pred2 * pred2, axis=-1)) + 1e-8)
+        return distance
+
     def train(self, X, Y):
         neg_idx = np.where(Y == 0)[0]
         X_neg = X[neg_idx]
         adv_x = tf.placeholder(tf.float32, shape=[None] + list(X.shape[1:]))
         distances = get_distances(self.sess, adv_x, self.model(adv_x), self.model(1. - adv_x),
                                   X_neg)
+        distances = self.get_dist(X_neg)
         selected_distance_idx = int(np.ceil(len(X_neg) * (1 - FLAGS.train_fpr)))
         self.threshold = sorted(distances)[selected_distance_idx - 1]
         print("Selected %f as the threshold value." % self.threshold)
@@ -87,6 +102,7 @@ class DetectionEvaluator:
         adv_x = tf.placeholder(tf.float32, shape=[None] + list(X.shape[1:]))
         distances = get_distances(self.sess, adv_x, self.model(adv_x), self.model(1 - adv_x),
                                   X)
+        distances = self.get_dist(X)
         threshold = self.threshold
         Y_pred = distances > threshold
 
@@ -111,7 +127,7 @@ class DetectionEvaluator:
         self.attack_name_id[attack_name] = 1
 
         X_leg_all = X[:len(X_adv_all)]
-
+        print(len(X_leg_all), len(X_adv_all))
         self.X_detect = X_detect = np.concatenate([X_leg_all, X_adv_all])
         # TODO: this could be wrong in non-default data selection mode.
         Y_label_adv = Y_label[selected_idx]
@@ -153,6 +169,7 @@ class DetectionEvaluator:
         self.db = TinyDB(detection_db_path)
         self.db.purge()
         self.query = Query()
+
         for i in range(len(X_detect)):
             attack_id = attack_id_seq[i]
             misclassified = 1 if misclassified_seq[i] == True else 0
@@ -205,7 +222,6 @@ class DetectionEvaluator:
         # print ("conditions: %s " % conditions)
 
         recs = db.search(conditions)
-
         if include_legitimate:
             if only_testing:
                 conditions = (query.attack_id == 0) & (query.train == 0)
