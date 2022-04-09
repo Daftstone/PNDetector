@@ -5,11 +5,13 @@ from model.mnist_model import MNIST_model
 from model.cifar10_model import CIFAR10_model
 from model.fmnist_model import FMNIST_model
 from model.svhn_model import SVHN_model
+from model.gtsrb_model import GTSRB_model
 from detection.negtive_detection import DetectionEvaluator as neg_detection
 
 from detection.fs_detection import DetectionEvaluator as fs_detection
 from detection.lid_detection import DetectionEvaluator as lid_detection
 from detection.bu_detection import DetectionEvaluator as bu_detection
+from detection.mlloo_detection import DetectionEvaluator as mlloo_detection
 from external.LID.util import get_model as get_lid_model
 
 
@@ -39,7 +41,7 @@ def get_umatrix(data):
     return temp
 
 
-def get_model(dataname,nb_classes):
+def get_model(dataname, nb_classes):
     if (dataname == "mnist"):
         model = MNIST_model(nb_classes=nb_classes)
     elif (dataname == 'cifar10'):
@@ -48,6 +50,8 @@ def get_model(dataname,nb_classes):
         model = FMNIST_model(nb_classes=nb_classes)
     elif (dataname == 'svhn'):
         model = SVHN_model(nb_classes=nb_classes)
+    elif (dataname == 'gtsrb'):
+        model = GTSRB_model(nb_classes=nb_classes)
     else:
         model = None
         print("unknown model!!!")
@@ -63,6 +67,8 @@ def get_detection(detection_name, model, sess, result_folder_detection, csv_fnam
         Detection = lid_detection(model, attack_string_hash, data_name)
     elif (detection_name == 'bu'):
         Detection = bu_detection(model, attack_string_hash, data_name)
+    elif (detection_name == 'mlloo'):
+        Detection = mlloo_detection(model, attack_string_hash, data_name)
     else:
         Detection = None
     return Detection
@@ -79,10 +85,9 @@ def get_first_n_examples_id_each_class(Y_test, n=1):
     for i in range(num_classes):
         loc = np.where(Y_test_labels == i)[0]
         if len(loc) > 0:
-            selected_idx.append(list(loc[:n]))
-
-    selected_idx = reduce(lambda x, y: x + y, zip(*selected_idx))
-
+            # selected_idx.append(list(loc[:n]))
+            selected_idx += list(loc[:n])
+    # selected_idx = reduce(lambda x, y: x + y, zip(*selected_idx))
     return np.array(selected_idx)
 
 

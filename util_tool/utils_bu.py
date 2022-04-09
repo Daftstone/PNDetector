@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from sklearn.linear_model import LogisticRegressionCV
 from sklearn.preprocessing import scale
-import keras.backend as K
+import tensorflow.keras.backend as K
 from keras.datasets import mnist, cifar10
 from keras.utils import np_utils
 from keras.models import Sequential

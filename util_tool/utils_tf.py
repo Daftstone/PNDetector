@@ -231,11 +231,13 @@ def get_distances(sess, x, predictions1, predictions2, X_test=None,
     if (FLAGS.similarity_type == 'l1'):
         correct_preds1 = tf.reduce_sum(tf.abs(predictions1 - predictions2), axis=-1)
     elif (FLAGS.similarity_type == 'cos'):
-        predictions2 = tf.concat([predictions2[:, 10:], predictions2[:, :10]], axis=-1)
+        if (predictions2.shape[1] >= 43):
+            predictions2 = tf.concat([predictions2[:, 43:], predictions2[:, :43]], axis=-1)
+        else:
+            predictions2 = tf.concat([predictions2[:, 10:], predictions2[:, :10]], axis=-1)
         correct_preds1 = 1. - tf.div(tf.reduce_sum(predictions1 * predictions2, axis=-1),
                                      tf.sqrt(tf.reduce_sum(predictions1 * predictions1, axis=-1)) * tf.sqrt(
                                          tf.reduce_sum(predictions2 * predictions2, axis=-1)) + 1e-8)
-
     elif (FLAGS.similarity_type == 'l2'):
         correct_preds1 = tf.linalg.norm(predictions1 - predictions2, axis=-1)
     else:
