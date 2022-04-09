@@ -14,6 +14,8 @@ from cleverhans.attacks import MomentumIterativeMethod
 from cleverhans.attacks import ElasticNetMethod
 from cleverhans.attacks import VirtualAdversarialMethod
 from cleverhans.attacks import SPSA
+from cleverhans.attacks import BasicIterativeMethod
+from cleverhans.attacks import SparseL1Descent
 
 FLAGS = flags.FLAGS
 
@@ -52,7 +54,7 @@ def get_adv_examples(sess, wrap, attack_type, X, Y):
         batch_size = 32
     elif (attack_type == 'cw'):
         attack_params = {
-            'binary_search_steps': 1,
+            'binary_search_steps': 5,
             'y': y,
             'max_iterations': 100,
             'learning_rate': .2,
@@ -62,7 +64,16 @@ def get_adv_examples(sess, wrap, attack_type, X, Y):
         attack_object = CarliniWagnerL2(wrap, sess=sess)
     elif (attack_type == 'mim'):
         attack_object = MomentumIterativeMethod(wrap, back='tf', sess=sess)
-        attack_params = {'clip_min': 0., 'clip_max': 1., 'eps': 0.1}
+        attack_params = {'eps': 0.1, 'eps_iter': 0.05,
+                         'nb_iter': 50, 'clip_min': 0.,
+                         'clip_max': 1., 'batch_size': 128
+                         }
+    elif (attack_type == 'bim'):
+        attack_object = BasicIterativeMethod(wrap, back='tf', sess=sess)
+        attack_params = {'eps': 0.1, 'eps_iter': 0.05,
+                         'nb_iter': 50, 'clip_min': 0.,
+                         'clip_max': 1., 'batch_size': 128
+                         }
     elif (attack_type == 'df'):
         attack_params = {
             'max_iterations': 50,
@@ -71,12 +82,11 @@ def get_adv_examples(sess, wrap, attack_type, X, Y):
         }
         attack_object = DeepFool(wrap, sess=sess)
         batch_size = 64
-    elif (attack_type == 'bim'):
-        attack_object = BasicIterativeMethod(wrap, back='tf', sess=sess)
-        attack_params = {'eps': 0.1, 'eps_iter': 0.05,
-                         'nb_iter': 10, 'clip_min': 0.,
-                         'clip_max': 1.
-                         }
+    elif (attack_type == 'sld'):
+        attack_params = {
+            'clip_min': 0., 'clip_max': 1., 'eps': 5.0, 'eps_iter': 1,'nb_iter':100
+        }
+        attack_object = SparseL1Descent(wrap, sess=sess)
     elif (attack_type == 'vam'):
         attack_object = VirtualAdversarialMethod(wrap, back='tf', sess=sess)
         attack_params = {'clip_min': 0., 'clip_max': 1., 'nb_iter': 100, 'eps': 2, 'xi': 1e-6}
