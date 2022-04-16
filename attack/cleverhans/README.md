@@ -16,6 +16,56 @@ of the latest attacks and defenses.
 In particular, we always welcome help towards resolving the [issues](https://github.com/tensorflow/cleverhans/issues)
 currently open.
 
+## Major updates coming to CleverHans
+
+CleverHans will soon support 3 frameworks: JAX, PyTorch, and TF2.  The package
+itself will focus on its initial principle: reference implementation of attacks
+against machine learning models to help with benchmarking models against
+adversarial examples. This repository will also contain two folders:
+`tutorials/` for scripts demonstrating the features of CleverHans and
+`defenses/` for scripts that contain authoritative implementations of defenses
+in one of the 3 supported frameworks. The structure of the future repository
+will look like this:
+
+```
+cleverhans/
+  jax/
+    attacks/
+      ...
+    tests/
+      ...
+  tf2/
+    attacks/
+      ...
+    tests/
+      ...
+  torch/
+    attacks/
+      ...
+    tests/
+      ...
+defenses/
+  jax/
+    ...
+  tf2/
+    ...
+  torch/
+    ...
+tutorials/
+  jax/
+    ...
+  tf2/
+    ...
+  torch/
+    ...
+```
+
+In the meanwhile, all of these folders can be found in the correspond `future/`
+subdirectory (e.g., `cleverhans/future/jax/attacks`, `cleverhans/future/jax/tests` or `defenses/future/jax/`).
+
+A public milestone has been created to track the changes that are to be
+implemented before the library version is incremented to v4. 
+
 ## Setting up CleverHans
 
 ### Dependencies
@@ -238,6 +288,7 @@ The following authors contributed 100 lines or more (ordered according to the Gi
 * Tzu-Wei Sung (National Taiwan University)
 * Alexey Kurakin (Google Brain)
 * Reuben Feinman (New York University)
+* Shiyu Duan (University of Florida)
 * Phani Krishna (Video Analytics Lab)
 * David Berthelot (Google Brain)
 * Tom Brown (Google Brain)
@@ -250,8 +301,11 @@ The following authors contributed 100 lines or more (ordered according to the Gi
 * Yen-Chen Lin (MIT)
 * Vahid Behzadan (Kansas State)
 * Jonathan Uesato (DeepMind)
+* Florian Tramèr (Stanford University)
+* Haojie Yuan (University of Science & Technology of China)
 * Zhishuai Zhang (Johns Hopkins)
 * Karen Hambardzumyan (YerevaNN)
+* Jianbo Chen (UC Berkeley)
 * Catherine Olsson (Google Brain)
 * Aidan Gomez (University of Oxford)
 * Zhi Li (University of Toronto)

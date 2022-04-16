@@ -1,6 +1,9 @@
 """Basic utilities for pytorch code"""
+
+import warnings
 from random import getrandbits
 
+import numpy as np
 import tensorflow as tf
 import torch
 from torch.autograd import Variable
@@ -43,6 +46,9 @@ def convert_pytorch_model_to_tf(model, out_dims=None):
   :return: A model function that maps an input (tf.Tensor) to the
   output of the model (tf.Tensor)
   """
+  warnings.warn("convert_pytorch_model_to_tf is deprecated, switch to"
+                + " dedicated PyTorch support provided by CleverHans v4.")
+
   torch_state = {
       'logits': None,
       'x': None,
