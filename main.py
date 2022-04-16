@@ -11,7 +11,7 @@ import sys
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import flags
-from keras import backend as K
+from tensorflow.keras import backend as K
 
 sys.path.append("./attack/cleverhans")
 sys.path.append("./external/EvadeML")
